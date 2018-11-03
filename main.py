@@ -44,11 +44,55 @@ def read_database(database):
     return data
 
 def generate_histograms(array):
+    data_1 = []
+    data_2 = []
+    data_3 = []
+    for a in array:
+        if a[4] == 'Iris-setosa':
+            data_1.append(a)
+        elif a[4] == 'Iris-versicolor':
+            data_2.append(a)
+        elif a[4] == 'Iris-virginica':
+            data_3.append(a)
+    print(data_1)
+    array_1 = np.array([data_1[0], data_1[1], data_1[2], data_1[3]])
+    array_2 = np.array([data_2[0], data_2[1], data_2[2], data_2[3]])
+    array_3 = np.array([data_3[0], data_3[1], data_3[2], data_3[3]])
     view = plt.figure()
-    pl1 = view.add_subplot(4,2,1)
-    pl2 = view.add_subplot(4,2,5)
-    pl1.hist(array[:, :1], bins=20, color='b', alpha=0.3)
-    pl2.hist(array[:, 1:2], bins=20, color='b', alpha=0.3)
+
+
+    pl1 = view.add_subplot(4, 3, 1)
+    axes = plt.gca()
+    axes.set_xlim([0, 8])
+    axes.set_ylim([0, 15])
+    pl2 = view.add_subplot(2, 3, 2)
+    axes = plt.gca()
+    axes.set_xlim([0, 8])
+    axes.set_ylim([0, 15])
+    pl3 = view.add_subplot(2, 3, 3)
+    axes = plt.gca()
+    axes.set_xlim([0, 8])
+    axes.set_ylim([0, 15])
+    pl4 = view.add_subplot(2, 3, 4)
+    axes = plt.gca()
+    axes.set_xlim([0, 8])
+    axes.set_ylim([0, 50])
+    pl5 = view.add_subplot(2, 3, 5)
+    axes = plt.gca()
+    axes.set_xlim([0, 8])
+    axes.set_ylim([0, 50])
+    pl6 = view.add_subplot(2, 3, 6)
+    axes = plt.gca()
+    axes.set_xlim([0, 8])
+    axes.set_ylim([0, 50])
+
+    pl1.hist([array[:, :1], array_1[:, :1]], bins=20, color=['b','r'], alpha=0.7)
+    pl2.hist([array[:, :1], array_2[:, :1]], bins=20, color=['b', 'r'], alpha=0.7)
+    pl3.hist([array[:, :1], array_3[:, :1]], bins=20, color=['b', 'r'], alpha=0.7)
+
+    pl4.hist([array[:, :2], array_1[:, :2]], bins=20, color=['b','r'], alpha=0.7)
+    pl5.hist([array[:, :2], array_2[:, :2]], bins=20, color=['b', 'r'], alpha=0.7)
+    pl6.hist([array[:, :2], array_3[:, :2]], bins=20, color=['b', 'r'], alpha=0.7)
     plt.show()
 # start
 # static data
