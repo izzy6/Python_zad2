@@ -42,8 +42,15 @@ def read_database(database):
     # data_array.append(data_3)
     # return data_array
     return data
-# start
 
+def generate_histograms(array):
+    view = plt.figure()
+    pl1 = view.add_subplot(4,2,1)
+    pl2 = view.add_subplot(4,2,5)
+    pl1.hist(array[:, :1], bins=20, color='b', alpha=0.3)
+    pl2.hist(array[:, 1:2], bins=20, color='b', alpha=0.3)
+    plt.show()
+# start
 # static data
 database_path_1 = 'database/iris.data'
 database_path_2 = 'database/iris.data' #TODO change
@@ -62,6 +69,7 @@ while is_finish == 0:
         if (operation == '1'):
             data = read_database(database_path_1)
             iris_operation(data)
+            generate_histograms(data)
 
         elif (operation == '2'):
             data = read_database(database_path_2)
