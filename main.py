@@ -1,7 +1,6 @@
 import numpy as np
 import re
 import matplotlib.pyplot as plt
-# import scipy as sp
 import pandas as pd
 
 def iris_operation(array):
@@ -13,27 +12,22 @@ def iris_operation(array):
     # Miximum
     max = np.max(float_array, axis=0)
     # # Mode
-    # string_array = array[:, 4:]
-    # mode = sp.mode(string_array)
-    # median_array = []
-    # min_array = []
-    # max_array = []
-    # for a in array:
-    #     # Get only float values
-    #     float_array = a[:,:4].astype(float)
-    #     # Median
-    #     median_tmp = np.median(float_array, axis=0)
-    #     median_array.append(median_tmp)
-    #     # Minimum
-    #     min_tmp = np.min(float_array, axis=0)
-    #     min_array.append(min_tmp)
-    #     # Miximum
-    #     max_tmp = np.max(float_array, axis=0)
-    #     max_array.append(max_tmp)
-    print(median)
-    print(min)
-    print(max)
-    # print(mode[0])
+    string_array = array[:, 4:]
+    trans_array = np.transpose( string_array )
+    count_1 = ['Iris-setosa' , np.count_nonzero( trans_array == 'Iris-setosa')]
+    count_2 = ['Iris-versicolor', np.count_nonzero(trans_array == 'Iris-versicolor')]
+    count_3 = ['Iris-virginica', np.count_nonzero(trans_array == 'Iris-virginica')]
+    count_list_int = [count_1[1], count_2[1], count_3[1]]
+    count_list = [count_1, count_2, count_3]
+    mode = []
+    for x in count_list:
+        if x[1] == np.max(count_list_int):
+            mode.append(x[0])
+    # Display values
+    print("Median: {}".format(median))
+    print("Minimum value: {}".format(min))
+    print("Maximum value: {}".format(max))
+    print("Mode: {}".format(mode))
 
 def read_database(database):
     df = pd.read_csv(database, sep=',')
