@@ -98,11 +98,27 @@ def generate_iris_histograms(array):
     plt.show()
 
 def births_operation(array):
-    number_of_births = array[:,2]
-    number_of_births_mean = number_of_births.mean()
-    print("Mean of births per day: %d" % number_of_births_mean)
-def generate_births_histograms(array):
-    plt.plot(np.arange(10))
+    births = array[:,2]
+    births_mean = births.mean()
+    print("Mean of births per day: %d" % births_mean)
+    return births_mean
+
+def generate_births_histograms(array, births_mean):
+    births = array[:,2]
+    dates = array[:,0]
+    births = np.array(births)
+    dates = np.array(dates)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.scatter(dates, births, s=1)
+    ax.set_title('Number of births a day over time')
+    ax.legend(loc='upper left')
+    ax.set_ylabel('Number of births')
+    #ax.set_xlim(xmin=dates[0], xmax=dates[-1])
+    fig.tight_layout
+    plt.axhline(y=births_mean, color='black', linewidth=1.5, label='Mean')
+    plt.show()
 
 # start
 # static data
@@ -126,8 +142,8 @@ while is_finish == 0:
             generate_iris_histograms(data)
         elif (operation == '2'):
             data = read_database(database_path_2)
-            births_operation(data)
-            generate_births_histograms(data)
+            mean = births_operation(data)
+            generate_births_histograms(data, mean)
         elif (operation == '3'):
             is_finish = 1           
 
