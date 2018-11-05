@@ -3,6 +3,20 @@ import re
 import matplotlib.pyplot as plt
 import pandas as pd
 
+def read_database(database):
+    df = pd.read_csv(database, sep=',')
+    data = df.values
+    # data_array = []
+    # # Split to 3 arrays
+    # data_1 = data[data[:, 4] == 'Iris-setosa', :]
+    # data_2 = data[data[:, 4] == 'Iris-versicolor', :]
+    # data_3 = data[data[:, 4] == 'Iris-virginica', :]
+    # data_array.append(data_1)
+    # data_array.append(data_2)
+    # data_array.append(data_3)
+    # return data_array
+    return data
+
 def iris_operation(array):
     float_array = array[:, :4].astype(float)
     # Median
@@ -23,27 +37,14 @@ def iris_operation(array):
     for x in count_list:
         if x[1] == np.max(count_list_int):
             mode.append(x[0])
+    print(count_list_int)
     # Display values
     print("Median: {}".format(median))
     print("Minimum value: {}".format(min))
     print("Maximum value: {}".format(max))
     print("Mode: {}".format(mode))
 
-def read_database(database):
-    df = pd.read_csv(database, sep=',')
-    data = df.values
-    # data_array = []
-    # # Split to 3 arrays
-    # data_1 = data[data[:, 4] == 'Iris-setosa', :]
-    # data_2 = data[data[:, 4] == 'Iris-versicolor', :]
-    # data_3 = data[data[:, 4] == 'Iris-virginica', :]
-    # data_array.append(data_1)
-    # data_array.append(data_2)
-    # data_array.append(data_3)
-    # return data_array
-    return data
-
-def generate_histograms(array):
+def generate_iris_histograms(array):
     data_1 = []
     data_2 = []
     data_3 = []
@@ -54,10 +55,11 @@ def generate_histograms(array):
             data_2.append(a)
         elif a[4] == 'Iris-virginica':
             data_3.append(a)
-    print(data_1)
+    #print(data_1)
     array_1 = np.array([data_1[0], data_1[1], data_1[2], data_1[3]])
     array_2 = np.array([data_2[0], data_2[1], data_2[2], data_2[3]])
     array_3 = np.array([data_3[0], data_3[1], data_3[2], data_3[3]])
+
     view = plt.figure()
 
 
@@ -94,33 +96,38 @@ def generate_histograms(array):
     pl5.hist([array[:, :2], array_2[:, :2]], bins=20, color=['b', 'r'], alpha=0.7)
     pl6.hist([array[:, :2], array_3[:, :2]], bins=20, color=['b', 'r'], alpha=0.7)
     plt.show()
+
+def births_operation(array):
+    number_of_births = array[:,2]
+    number_of_births_mean = number_of_births.mean()
+    print("Mean of births per day: %d" % number_of_births_mean)
+def generate_births_histograms(array):
+    plt.plot(np.arange(10))
+
 # start
 # static data
 database_path_1 = 'database/iris.data'
-database_path_2 = 'database/iris.data' #TODO change
+database_path_2 = 'database/births.csv'
 
 is_finish = 0
 while is_finish == 0:
-    print("Select database:")
-    print("1. Iris")
-    print("2. ??")
-    print("3. ??")
+    print("Choose option:")
+    print("1. For mark 3 - Iris")
+    print("2. For mark 4 - Births")
+    print("3. Terminate program")
 
     operation = '0'
-    while not re.match("^[1-4]", operation):
+    while not re.match("^[1-3]", operation):
         operation = input()
     else:
         if (operation == '1'):
             data = read_database(database_path_1)
             iris_operation(data)
-            generate_histograms(data)
-
+            generate_iris_histograms(data)
         elif (operation == '2'):
             data = read_database(database_path_2)
-            print("base 2")
+            births_operation(data)
+            generate_births_histograms(data)
         elif (operation == '3'):
-            data = read_database(database_path_1)
-            print("base 3")
-        elif(operation == '4'):
-            is_finish = 1
+            is_finish = 1           
 
