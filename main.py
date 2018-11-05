@@ -69,6 +69,7 @@ def generate_iris_histograms(array):
     # axes = plt.gca()
     # axes.set_xlim([0, 8])
     # axes.set_ylim([0, 10])
+    print([array[:, 2], array[:, 3]])
     pl1.hist([array[:, 2], array[:, 3]], bins=10, color=['b','r'], alpha=0.5, label=['petal length', 'petal width'])
     pl1.set_title('Histogram of petal length and width')
     pl1.set_xlabel('Number of irises')
@@ -85,29 +86,34 @@ def births_operation(array):
     print("Mean of births per day: %d" % births_mean)
     return births_mean
 
-def generate_births_histograms(array, births_mean):
-    births = array[:500,2]
-    births = np.array(births)
-    #dates = np.array(dates)
-    print(births)
-    #fig = plt.figure()
-    #ax = fig.add_subplot(1,1,1)
-    #ax.scatter(dates, births, s=1)
-    #ax.set_title('Histogram')
-    #ax.legend(loc='upper left')
-    #ax.set_ylabel('Number of births')
-    #ax.set_xlim(xmin=dates[0], xmax=dates[-1])
-    #fig.tight_layout
-    #plt.axhline(y=births_mean, color='black', linewidth=1.5, label='Mean')
-    #print(x)
+def test(array, births_mean):
 
-    #x = np.random.random_integers(1, 100, 5)
-    #print(x)
-    #plt.hist(x, bins=20)
-    #plt.ylabel('No of times')
+    bins = np.linspace(np.min(array[:,2]), np.max(array[:,2]), 10)
+    print(bins)
+    births = np.asarray(array[:,2], dtype=np.float64)
+    print(births)
+    digitized = np.digitize(births, bins)
+    print(digitized)
+    #view = plt.figure()
+    #pl1 = view.add_subplot(1, 1, 1)
+    #axes = plt.gca()
+    #axes.set_xlim([np.min(array[:,2]), np.max(array[:,2])])
+    #axes.set_ylim([0, 60])
+
+    #pl1.hist(array[:, 2], bins=10, alpha=0.5, label=['petal length', 'petal width'])
+    #pl1.set_title('Histogram of petal length and width')
+    #pl1.set_xlabel('Number of irises')
+    #pl1.set_ylabel('[cm]')
+    #pl1.legend()
+    plt.hist(births, bins=bins)
+    plt.show()
     #plt.show()
-    bin_edges = [8000, 8400, 8800, 9200, 9600, 10000, 10400, 10800, 11200, 11600]
-    plt.hist(births, bins=bin_edges)
+
+def generate_births_histograms(array, births_mean):
+
+    bins = np.linspace(np.min(array[:,2]), np.max(array[:,2]), 20)
+    births = np.asarray(array[:,2], dtype=np.float64)
+    plt.hist(births, bins=bins)
     plt.show()
 
 # start
