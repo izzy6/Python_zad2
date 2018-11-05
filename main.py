@@ -37,47 +37,17 @@ def iris_operation(array):
     print("Mode: {}".format(mode))
 
 def generate_iris_histograms(array):
-    # data_1 = []
-    # data_2 = []
-    # data_3 = []
-    # for a in array:
-    #     if a[4] == 'Iris-setosa':
-    #         data_1.append(a)
-    #     elif a[4] == 'Iris-versicolor':
-    #         data_2.append(a)
-    #     elif a[4] == 'Iris-virginica':
-    #         data_3.append(a)
-    #
-    # array_1 = np.array([data_1[0], data_1[1], data_1[2], data_1[3]])
-    # array_2 = np.array([data_2[0], data_2[1], data_2[2], data_2[3]])
-    # array_3 = np.array([data_3[0], data_3[1], data_3[2], data_3[3]])
-
     view = plt.figure()
     pl1 = view.add_subplot(1, 1, 1)
     axes = plt.gca()
     axes.set_xlim([0, 8])
     axes.set_ylim([0, 60])
-    # pl2 = view.add_subplot(2, 2, 2)
-    # axes = plt.gca()
-    # axes.set_xlim([0, 8])
-    # axes.set_ylim([0, 10])
-    # pl3 = view.add_subplot(2, 2, 3)
-    # axes = plt.gca()
-    # axes.set_xlim([0, 8])
-    # axes.set_ylim([0, 10])
-    # pl4 = view.add_subplot(2, 2, 4)
-    # axes = plt.gca()
-    # axes.set_xlim([0, 8])
-    # axes.set_ylim([0, 10])
-    print([array[:, 2], array[:, 3]])
+
     pl1.hist([array[:, 2], array[:, 3]], bins=10, color=['b','r'], alpha=0.5, label=['petal length', 'petal width'])
     pl1.set_title('Histogram of petal length and width')
     pl1.set_xlabel('Number of irises')
     pl1.set_ylabel('[cm]')
     pl1.legend()
-    # pl2.hist([array_1[:, 2], array_1[:, 3]], bins=5, color=['b', 'r'], alpha=0.5)
-    # pl3.hist([array_2[:, 2], array_2[:, 3]], bins=5, color=['b', 'r'], alpha=0.5)
-    # pl4.hist([array_3[:, 2], array_3[:, 3]], bins=5, color=['b', 'r'], alpha=0.5)
     plt.show()
 
 def births_operation(array):
@@ -86,34 +56,16 @@ def births_operation(array):
     print("Mean of births per day: %d" % births_mean)
     return births_mean
 
-def test(array, births_mean):
-
-    bins = np.linspace(np.min(array[:,2]), np.max(array[:,2]), 10)
-    print(bins)
-    births = np.asarray(array[:,2], dtype=np.float64)
-    print(births)
-    digitized = np.digitize(births, bins)
-    print(digitized)
-    #view = plt.figure()
-    #pl1 = view.add_subplot(1, 1, 1)
-    #axes = plt.gca()
-    #axes.set_xlim([np.min(array[:,2]), np.max(array[:,2])])
-    #axes.set_ylim([0, 60])
-
-    #pl1.hist(array[:, 2], bins=10, alpha=0.5, label=['petal length', 'petal width'])
-    #pl1.set_title('Histogram of petal length and width')
-    #pl1.set_xlabel('Number of irises')
-    #pl1.set_ylabel('[cm]')
-    #pl1.legend()
-    plt.hist(births, bins=bins)
-    plt.show()
-    #plt.show()
-
 def generate_births_histograms(array, births_mean):
 
     bins = np.linspace(np.min(array[:,2]), np.max(array[:,2]), 20)
     births = np.asarray(array[:,2], dtype=np.float64)
-    plt.hist(births, bins=bins)
+    plt.hist(births, bins=bins, color='orange')
+    plt.xlabel("Number of births per day")
+    plt.ylabel("Number of days with number of births in given range")
+    plt.title("Histogram of births per day")
+    plt.axvline(x=births_mean, color='black', linestyle='--')
+    plt.text(births_mean,500,'Mean of births',rotation=90)
     plt.show()
 
 # start
