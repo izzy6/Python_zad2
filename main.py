@@ -104,20 +104,28 @@ def births_operation(array):
     return births_mean
 
 def generate_births_histograms(array, births_mean):
-    births = array[:,2]
-    dates = array[:,0]
+    births = array[:500,2]
     births = np.array(births)
-    dates = np.array(dates)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
-    ax.scatter(dates, births, s=1)
-    ax.set_title('Number of births a day over time')
-    ax.legend(loc='upper left')
-    ax.set_ylabel('Number of births')
+    #dates = np.array(dates)
+    print(births)
+    #fig = plt.figure()
+    #ax = fig.add_subplot(1,1,1)
+    #ax.scatter(dates, births, s=1)
+    #ax.set_title('Histogram')
+    #ax.legend(loc='upper left')
+    #ax.set_ylabel('Number of births')
     #ax.set_xlim(xmin=dates[0], xmax=dates[-1])
-    fig.tight_layout
-    plt.axhline(y=births_mean, color='black', linewidth=1.5, label='Mean')
+    #fig.tight_layout
+    #plt.axhline(y=births_mean, color='black', linewidth=1.5, label='Mean')
+    #print(x)
+
+    #x = np.random.random_integers(1, 100, 5)
+    #print(x)
+    #plt.hist(x, bins=20)
+    #plt.ylabel('No of times')
+    #plt.show()
+    bin_edges = [8000, 8400, 8800, 9200, 9600, 10000, 10400, 10800, 11200, 11600]
+    plt.hist(births, bins=bin_edges)
     plt.show()
 
 # start
