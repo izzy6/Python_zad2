@@ -2,10 +2,26 @@ import numpy as np
 import re
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy.stats as stats
 
 def read_database(database):
     df = pd.read_csv(database, sep=',')
+    correlation = df.corr()
+    print("Correlation table:")
+    print(correlation)
+        # .abs().unstack()
+    # correlation_sort = correlation.sort_values(kind="quicksort")
+    #
     data = df.values
+    # corr_max = correlation_sort[12]
+    # corr_max = correlation_sort[len(df.values[0])*len(df.values[0])-len(df.values[0])]
+    # for v in range(data[0]):
+    #     if df.values[v] == corr_max[0]:
+    #         for v2 in range(df.values[0]):
+    #             if df.values[v2] == corr_max[1]:
+    #                 index = [v, v2]
+    # print(" Max correlation: %i column and %i column" % index[0], index[1])
+
     # data_array = []
     return data
 
@@ -30,6 +46,7 @@ def iris_operation(array):
         if x[1] == np.max(count_list_int):
             mode.append(x[0])
     print(count_list_int)
+
     # Display values
     print("Median: {}".format(median))
     print("Minimum value: {}".format(min))
@@ -54,6 +71,11 @@ def births_operation(array):
     births = array[:,2]
     births_mean = births.mean()
     print("Mean of births per day: %d" % births_mean)
+    ttest = stats.ttest_1samp(a=array[:,2], popmean=1000)
+    if ttest.pvalue <= 0.005 :
+        print("Hipoteza odrzucona, dla przedziału ufności 95%")
+    else:
+        print("Hipoteza poprawna, dla przedziału ufności 95%")
     return births_mean
 
 def generate_births_histograms(array, births_mean):
