@@ -6,7 +6,6 @@ import pandas as pd
 def read_database(database):
     df = pd.read_csv(database, sep=',')
     data = df.values
-    # data_array = []
     return data
 
 def iris_operation(array):
@@ -36,6 +35,21 @@ def iris_operation(array):
     print("Maximum value: {}".format(max))
     print("Mode: {}".format(mode))
 
+def show_correlation(database):
+    df = pd.read_csv(database, sep=',')
+    correlations = df.corr()
+    # plot correlation matrix
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(correlations, vmin=-1, vmax=1)
+    fig.colorbar(cax)
+    ticks = np.arange(0,3,1)
+    ax.set_xticks(ticks)
+    ax.set_yticks(ticks)
+    #ax.set_xticklabels(names)
+    #ax.set_yticklabels(names)
+    plt.show()
+
 def generate_iris_histograms(array):
     view = plt.figure()
     pl1 = view.add_subplot(1, 1, 1)
@@ -55,9 +69,8 @@ def births_operation(array):
     births_mean = births.mean()
     print("Mean of births per day: %d" % births_mean)
     return births_mean
-
+    
 def generate_births_histograms(array, births_mean):
-
     bins = np.linspace(np.min(array[:,2]), np.max(array[:,2]), 20)
     births = np.asarray(array[:,2], dtype=np.float64)
     plt.hist(births, bins=bins, color='orange')
@@ -86,6 +99,7 @@ while is_finish == 0:
     else:
         if (operation == '1'):
             data = read_database(database_path_1)
+            show_correlation(database_path_1)
             iris_operation(data)
             generate_iris_histograms(data)
         elif (operation == '2'):
