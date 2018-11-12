@@ -2,6 +2,7 @@ import numpy as np
 import re
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy.stats as stats
 
 def read_database(database):
     df = pd.read_csv(database, sep=',')
@@ -29,6 +30,7 @@ def iris_operation(array):
         if x[1] == np.max(count_list_int):
             mode.append(x[0])
     print(count_list_int)
+
     # Display values
     print("Median: {}".format(median))
     print("Minimum value: {}".format(min))
@@ -46,8 +48,7 @@ def show_correlation(database):
     ticks = np.arange(0,3,1)
     ax.set_xticks(ticks)
     ax.set_yticks(ticks)
-    #ax.set_xticklabels(names)
-    #ax.set_yticklabels(names)
+
     plt.show()
 
 def generate_iris_histograms(array):
@@ -68,6 +69,11 @@ def births_operation(array):
     births = array[:,2]
     births_mean = births.mean()
     print("Mean of births per day: %d" % births_mean)
+    ttest = stats.ttest_1samp(a=array[:,2], popmean=1000)
+    if ttest.pvalue <= 0.005 :
+        print("Hipoteza odrzucona, dla przedziału ufności 95%")
+    else:
+        print("Hipoteza poprawna, dla przedziału ufności 95%")
     return births_mean
     
 def generate_births_histograms(array, births_mean):

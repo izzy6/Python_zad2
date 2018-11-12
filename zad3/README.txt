@@ -1,0 +1,1 @@
+Zbiór danych pobrany ze strony https://archive.ics.uci.edu/ml/datasets/Automobile
