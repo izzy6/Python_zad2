@@ -3,6 +3,8 @@ import statistics
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import linear_model, datasets
+from sklearn.metrics.pairwise import euclidean_distances
+from scipy.spatial import distance
 from sklearn.metrics import mean_squared_error, r2_score
 
 # WAŻNE!!!!
@@ -69,6 +71,29 @@ def fillMissingValuesWithMeans(dataset):
     print(dataset.head(20))
     #print(dataset.mean())
     return dataset
+
+def fillMissingValuesWithHotDeck(dataset, datasetWithoutNan):
+    print("\nZastepowanie brakujacych wartosci  wartościami najbliższymi (odleglosc euklidesowa) na podstawie najbardziej skorelowanej cechy..")
+    tmp = []
+    for d in dataset.values:
+        if np.isnan(d[3]) :
+            dist = []
+            for dwn in datasetWithoutNan.values:
+                dist.append(distance.euclidean(d[5], dwn[5]))
+            d[3] = datasetWithoutNan.values[dist.index(min(dist)), 3]
+        tmp.append(d[3])
+    dataset['horsepower'].fillna(tmp[0], inplace = True)
+    return dataset
+
+def fillMissingValuesWithInterpolation(dataset):
+    print("\nZastepowanie brakujacych wartosci poprzez wartosci po interpolacji...")
+    new_dataset = dataset.copy()
+    new_dataset.set_index('acceleration', inplace = True)
+    new_dataset.sort_index(inplace = True)
+    new_dataset['horsepower'].interpolate(method='index', inplace = True)
+    print(new_dataset.head(20))
+    return new_dataset
+
 
 def regressionFunction(dataset):
     #rysowanie wykresow na podstawie funkcji regresji wyliczonej za pomoca metod z pakietu sklearn ale chyba nie o to tu jednak choodzi.. na wszelki wypadek nie kasuje funkcji
@@ -150,8 +175,8 @@ def printStatistics(dataset):
 
     print("odchylenie standardowe = {}, \nśrednia = {}, \nliczba rekordów = {}\n\n".format(st_dev, x_mean, n))
 
-####### THE END OF FUNCTIONS
-    
+###### THE END OF FUNCTIONS
+3
 dataset = readDataset()
 
 countMissingValues(dataset)
@@ -159,17 +184,16 @@ countMissingValues(dataset)
 datasetWithDeletedRows = deleteRowsWithMissingValues(dataset)
 
 #we have to pass array parameters of columns that we want to use for our regression function
-coefBefore = estimate_coef(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1)) 
-print("Wyznaczone współczynniki regresji przed imputacją:\na = {} \nb = {}".format(coefBefore[0], coefBefore[1])) 
+coefBefore = estimate_coef(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1))
+print("Wyznaczone współczynniki regresji przed imputacją:\na = {} \nb = {}".format(coefBefore[0], coefBefore[1]))
 printStatistics(datasetWithDeletedRows)
 #data imputation with means
 datasetWithFilledMeanValues = fillMissingValuesWithMeans(dataset)
 
-
 plot_regression_line(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1), coefBefore)
 
-coefAfter = estimate_coef(np.asarray(datasetWithFilledMeanValues['horsepower']).reshape(-1,1), np.asarray(datasetWithFilledMeanValues['acceleration']).reshape(-1,1)) 
-print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1])) 
+coefAfter = estimate_coef(np.asarray(datasetWithFilledMeanValues['horsepower']).reshape(-1,1), np.asarray(datasetWithFilledMeanValues['acceleration']).reshape(-1,1))
+print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
 printStatistics(datasetWithFilledMeanValues)
 
 
@@ -177,5 +201,44 @@ print("Współczynniki krzywej regresji zmieniły się nieznacznie ponieważ w d
 print("Po imputacji danych wychylenie standardowe nieznacznie się zmniejszyło.\n")
 plot_regression_line(np.asarray(datasetWithFilledMeanValues['horsepower']).reshape(-1,1), np.asarray(datasetWithFilledMeanValues['acceleration']).reshape(-1,1), coefAfter)
 
+# # # 4
+print("\n \n ----------Cześć 2---------- \n \n")
+dataset = readDataset()
+countMissingValues(dataset)
+datasetWithDeletedRows = deleteRowsWithMissingValues(dataset)
+#we have to pass array parameters of columns that we want to use for our regression function
+coefBefore = estimate_coef(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1))
+print("Wyznaczone współczynniki regresji przed imputacją:\na = {} \nb = {}".format(coefBefore[0], coefBefore[1]))
+printStatistics(datasetWithDeletedRows)
+#data imputation with hot dock method
+datasetAfterHotDock = fillMissingValuesWithHotDeck(dataset, datasetWithDeletedRows)
+plot_regression_line(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1), coefBefore)
+
+coefAfter = estimate_coef(np.asarray(datasetAfterHotDock['horsepower']).reshape(-1,1), np.asarray(datasetAfterHotDock['acceleration']).reshape(-1,1))
+print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
+printStatistics(datasetAfterHotDock)
 
 
+print("Współczynniki krzywej regresji zmieniły się nieznacznie ponieważ w drugim przypadku badany zbiór danych jest większy o 23 rekordy. \nNatomiast średnia wartość kolumn nie zmieniła się ponieważ do wypełnienia brakujących danych zostały wykorzystane średnie wartości")
+print("Po imputacji danych wychylenie standardowe nieznacznie się zmniejszyło.\n")
+plot_regression_line(np.asarray(datasetAfterHotDock['horsepower']).reshape(-1,1), np.asarray(datasetAfterHotDock['acceleration']).reshape(-1,1), coefAfter)
+
+# print("\n \n ----------Cześć 2---------- \n \n")
+# dataset = readDataset()
+# countMissingValues(dataset)
+# datasetWithDeletedRows = deleteRowsWithMissingValues(dataset)
+# #we have to pass array parameters of columns that we want to use for our regression function
+# coefBefore = estimate_coef(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1))
+# print("Wyznaczone współczynniki regresji przed imputacją:\na = {} \nb = {}".format(coefBefore[0], coefBefore[1]))
+# printStatistics(datasetWithDeletedRows)
+# #data imputation with hot dock method
+# fillMissingValuesWithInterpolation = fillMissingValuesWithInterpolation(dataset)
+# plot_regression_line(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1), coefBefore)
+#
+# coefAfter = estimate_coef(np.asarray(fillMissingValuesWithInterpolation['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesWithInterpolation['acceleration']).reshape(-1,1))
+# print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
+# printStatistics(fillMissingValuesWithInterpolation)
+#
+# print("Współczynniki krzywej regresji zmieniły się nieznacznie ponieważ w drugim przypadku badany zbiór danych jest większy o 23 rekordy. \nNatomiast średnia wartość kolumn nie zmieniła się ponieważ do wypełnienia brakujących danych zostały wykorzystane średnie wartości")
+# print("Po imputacji danych wychylenie standardowe nieznacznie się zmniejszyło.\n")
+# plot_regression_line(np.asarray(fillMissingValuesWithInterpolation['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesWithInterpolation['acceleration']).reshape(-1,1), coefAfter)
