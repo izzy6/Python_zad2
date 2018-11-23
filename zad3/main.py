@@ -90,7 +90,6 @@ def fillMissingValuesFromRegressionLine(dataset, coef):
     tmp = []
     for d in dataset.values:
         if np.isnan(d[3]) :
-            dist = []
             d[3] = coef[0] + coef[1] * d[5]
         tmp.append(d[3])
     dataset['horsepower'].fillna(tmp[0], inplace = True)
@@ -140,6 +139,14 @@ def regressionFunction(dataset):
     plt.yticks(())
     plt.show()
 
+def clearValues(dataset, modValue):
+    tmp = []
+    for d in range(len(dataset.values)):
+        if d % modValue == 0 :
+            dataset.loc[d , 'horsepower'] = np.nan
+    return dataset
+
+
 def estimate_coef(x, y): 
     #wzory z internetu do wyliczenia krzywej regresji (chyba o to chodzi)
     #y = a + b*x
@@ -166,7 +173,7 @@ def plot_regression_line(x, y, coef):
     plt.scatter(x, y, color = "m", 
                marker = "o", s = 30) 
   
-    # predicted response vector - chyba stąd trzeba będzie uzyskać dane do imputacji w zadaniu na 4
+    # predicted response vector
     y_pred = coef[0] + coef[1]*x 
   
     # regression line 
@@ -175,6 +182,20 @@ def plot_regression_line(x, y, coef):
     plt.xlabel('horsepower') 
     plt.ylabel('acceleration')
     plt.show()
+
+def subplot_regression_line(x, y, coef, color):
+        # plotting the actual points as scatter plot
+        plt.scatter(x, y, color=color,
+                    marker="o", s=30)
+
+        # predicted response vector
+        y_pred = coef[0] + coef[1] * x
+        # regression line
+        plt.plot(x, y_pred, color='k')
+
+        plt.xlabel('horsepower')
+        plt.ylabel('acceleration')
+        return plt
 
 
 def printStatistics(dataset):
@@ -186,8 +207,20 @@ def printStatistics(dataset):
 
     print("odchylenie standardowe = {}, \nśrednia = {}, \nliczba rekordów = {}\n\n".format(st_dev, x_mean, n))
 
+def countForDifferentDatasets(dataset, color):
+    datasetWithDeletedRows = deleteRowsWithMissingValues(dataset)
+    datasetAfterHotDock = fillMissingValuesWithHotDeck(dataset, datasetWithDeletedRows)
+
+    coefAfter = estimate_coef(np.asarray(datasetAfterHotDock['horsepower']).reshape(-1, 1),
+                              np.asarray(datasetAfterHotDock['acceleration']).reshape(-1, 1))
+    print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
+    printStatistics(datasetAfterHotDock)
+    return subplot_regression_line(np.asarray(datasetAfterHotDock['horsepower']).reshape(-1, 1),
+                         np.asarray(datasetAfterHotDock['acceleration']).reshape(-1, 1), coefAfter, color)
+
+
 ###### THE END OF FUNCTIONS
-3
+# 3
 dataset = readDataset()
 
 countMissingValues(dataset)
@@ -214,10 +247,11 @@ printStatistics(datasetWithFilledMeanValues)
 print("Wnioski: Współczynniki krzywej regresji zmieniły się nieznacznie ponieważ w drugim przypadku badany zbiór danych jest większy o 23 rekordy. \nNatomiast średnia wartość kolumn nie zmieniła się ponieważ do wypełnienia brakujących danych zostały wykorzystane średnie wartości")
 print("Po imputacji danych wychylenie standardowe nieznacznie się zmniejszyło.\n")
 plot_regression_line(np.asarray(datasetWithFilledMeanValues['horsepower']).reshape(-1,1), np.asarray(datasetWithFilledMeanValues['acceleration']).reshape(-1,1), coefAfter)
-
-#--------------------------------------
+#
+# #4
+# #--------------------------------------
 dataset = datasetWithNan.copy() # dataset with nan
-print("Metoda Hot Dock")
+# print("Metoda Hot Dock")
 datasetAfterHotDock = fillMissingValuesWithHotDeck(dataset, datasetWithDeletedRows)
 plot_regression_line(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1), coefBefore)
 
@@ -252,4 +286,32 @@ printStatistics(fillMissingValuesFromRegressionLine)
 
 print("Wnioski: ")
 plot_regression_line(np.asarray(fillMissingValuesFromRegressionLine['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesFromRegressionLine['acceleration']).reshape(-1,1), coefAfter)
+
+#5
+view = plt.figure()
+
+# ------ 15%
+dataset_15 = clearValues(datasetAfterHotDock.copy(), 7)
+countMissingValues(dataset_15)
+print("Metoda Hot Dock dla 14% brakujacych wartości")
+pl1 = view.add_subplot(3, 1, 1)
+plt.title("Dla 14% pustych wartości")
+pl1 = countForDifferentDatasets(dataset_15, 'm')
+#-------30%
+dataset_30 = clearValues(datasetAfterHotDock.copy(), 3)
+countMissingValues(dataset_30)
+print("Metoda Hot Dock dla 33% brakujacych wartości")
+pl2 = view.add_subplot(3, 1, 2)
+plt.title("Dla 33% pustych wartości")
+pl2 = countForDifferentDatasets(dataset_30, 'g')
+# --------- 45%
+dataset_45 = clearValues(datasetAfterHotDock.copy(), 2)
+countMissingValues(dataset_45)
+print("Metoda Hot Dock dla 50% brakujacych wartości")
+pl3 = view.add_subplot(3, 1, 3)
+plt.title("Dla 50% pustych wartości")
+pl3 = countForDifferentDatasets(dataset_45, 'r')
+plt.tight_layout()
+plt.show()
+# WNIOSKI!!!!!
 
