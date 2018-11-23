@@ -150,11 +150,12 @@ def estimate_coef(x, y):
     x_mean, y_mean = np.mean(x), np.mean(y) 
     #print("x_mean = {}, y_mean = {}, n = {}".format(x_mean, y_mean, n))
     # calculating cross-deviation and deviation about x 
-    SS_xy = np.sum(y*x - n*y_mean*x_mean) 
-    SS_xx = np.sum(x*x - n*x_mean*x_mean) 
+    # SS_xy = np.sum(y*x - n*y_mean*x_mean)
+    # SS_xx = np.sum(x*x - n*x_mean*x_mean)
   
     # calculating regression coefficients 
-    b = SS_xy / SS_xx 
+    # b = SS_xy / SS_xx
+    b = np.sum((x - x_mean) * (y - y_mean)) / np.sum((x - x_mean) ** 2)
     a = y_mean - b*x_mean 
   
     return(a, b) 
@@ -231,7 +232,6 @@ dataset = datasetWithNan.copy() # dataset with nan
 print("Metoda interpolacji")
 
 fillMissingValuesWithInterpolation = fillMissingValuesWithInterpolation(dataset)
-print(fillMissingValuesWithInterpolation)
 
 coefAfter = estimate_coef(np.asarray(fillMissingValuesWithInterpolation['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesWithInterpolation.index).reshape(-1,1))
 print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
@@ -252,3 +252,4 @@ printStatistics(fillMissingValuesFromRegressionLine)
 
 print("Wnioski: ")
 plot_regression_line(np.asarray(fillMissingValuesFromRegressionLine['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesFromRegressionLine['acceleration']).reshape(-1,1), coefAfter)
+
