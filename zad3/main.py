@@ -85,6 +85,17 @@ def fillMissingValuesWithHotDeck(dataset, datasetWithoutNan):
     dataset['horsepower'].fillna(tmp[0], inplace = True)
     return dataset
 
+def fillMissingValuesFromRegressionLine(dataset, coef):
+    print("\nZastepowanie brakujacych wartosci  wartościami na podstawie wzoru na funkcję regresji..")
+    tmp = []
+    for d in dataset.values:
+        if np.isnan(d[3]) :
+            dist = []
+            d[3] = coef[0] + coef[1] * d[5]
+        tmp.append(d[3])
+    dataset['horsepower'].fillna(tmp[0], inplace = True)
+    return dataset
+
 def fillMissingValuesWithInterpolation(dataset):
     print("\nZastepowanie brakujacych wartosci poprzez wartosci po interpolacji...")
     new_dataset = dataset.copy()
@@ -161,9 +172,8 @@ def plot_regression_line(x, y, coef):
     plt.plot(x, y_pred, color = "g") 
   
     plt.xlabel('horsepower') 
-    plt.ylabel('acceleration') 
-  
-    plt.show() 
+    plt.ylabel('acceleration')
+    plt.show()
 
 
 def printStatistics(dataset):
@@ -180,65 +190,65 @@ def printStatistics(dataset):
 dataset = readDataset()
 
 countMissingValues(dataset)
-
+datasetWithNan = dataset.copy()
 datasetWithDeletedRows = deleteRowsWithMissingValues(dataset)
 
 #we have to pass array parameters of columns that we want to use for our regression function
 coefBefore = estimate_coef(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1))
 print("Wyznaczone współczynniki regresji przed imputacją:\na = {} \nb = {}".format(coefBefore[0], coefBefore[1]))
 printStatistics(datasetWithDeletedRows)
+
+#--------------------------------------
+print("Metoda uzupełniania średnimi wartościami")
 #data imputation with means
 datasetWithFilledMeanValues = fillMissingValuesWithMeans(dataset)
 
-plot_regression_line(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1), coefBefore)
+regression_function = plot_regression_line(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1), coefBefore)
 
 coefAfter = estimate_coef(np.asarray(datasetWithFilledMeanValues['horsepower']).reshape(-1,1), np.asarray(datasetWithFilledMeanValues['acceleration']).reshape(-1,1))
 print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
 printStatistics(datasetWithFilledMeanValues)
 
 
-print("Współczynniki krzywej regresji zmieniły się nieznacznie ponieważ w drugim przypadku badany zbiór danych jest większy o 23 rekordy. \nNatomiast średnia wartość kolumn nie zmieniła się ponieważ do wypełnienia brakujących danych zostały wykorzystane średnie wartości")
+print("Wnioski: Współczynniki krzywej regresji zmieniły się nieznacznie ponieważ w drugim przypadku badany zbiór danych jest większy o 23 rekordy. \nNatomiast średnia wartość kolumn nie zmieniła się ponieważ do wypełnienia brakujących danych zostały wykorzystane średnie wartości")
 print("Po imputacji danych wychylenie standardowe nieznacznie się zmniejszyło.\n")
 plot_regression_line(np.asarray(datasetWithFilledMeanValues['horsepower']).reshape(-1,1), np.asarray(datasetWithFilledMeanValues['acceleration']).reshape(-1,1), coefAfter)
 
-# # # 4
-print("\n \n ----------Cześć 2---------- \n \n")
-dataset = readDataset()
-countMissingValues(dataset)
-datasetWithDeletedRows = deleteRowsWithMissingValues(dataset)
-#we have to pass array parameters of columns that we want to use for our regression function
-coefBefore = estimate_coef(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1))
-print("Wyznaczone współczynniki regresji przed imputacją:\na = {} \nb = {}".format(coefBefore[0], coefBefore[1]))
-printStatistics(datasetWithDeletedRows)
-#data imputation with hot dock method
+#--------------------------------------
+dataset = datasetWithNan.copy() # dataset with nan
+print("Metoda Hot Dock")
 datasetAfterHotDock = fillMissingValuesWithHotDeck(dataset, datasetWithDeletedRows)
 plot_regression_line(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1), coefBefore)
 
 coefAfter = estimate_coef(np.asarray(datasetAfterHotDock['horsepower']).reshape(-1,1), np.asarray(datasetAfterHotDock['acceleration']).reshape(-1,1))
 print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
 printStatistics(datasetAfterHotDock)
-
-
-print("Współczynniki krzywej regresji zmieniły się nieznacznie ponieważ w drugim przypadku badany zbiór danych jest większy o 23 rekordy. \nNatomiast średnia wartość kolumn nie zmieniła się ponieważ do wypełnienia brakujących danych zostały wykorzystane średnie wartości")
-print("Po imputacji danych wychylenie standardowe nieznacznie się zmniejszyło.\n")
+print("Wnioski: ??")
 plot_regression_line(np.asarray(datasetAfterHotDock['horsepower']).reshape(-1,1), np.asarray(datasetAfterHotDock['acceleration']).reshape(-1,1), coefAfter)
 
-# print("\n \n ----------Cześć 2---------- \n \n")
-# dataset = readDataset()
-# countMissingValues(dataset)
-# datasetWithDeletedRows = deleteRowsWithMissingValues(dataset)
-# #we have to pass array parameters of columns that we want to use for our regression function
-# coefBefore = estimate_coef(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1))
-# print("Wyznaczone współczynniki regresji przed imputacją:\na = {} \nb = {}".format(coefBefore[0], coefBefore[1]))
-# printStatistics(datasetWithDeletedRows)
-# #data imputation with hot dock method
-# fillMissingValuesWithInterpolation = fillMissingValuesWithInterpolation(dataset)
-# plot_regression_line(np.asarray(datasetWithDeletedRows['horsepower']).reshape(-1,1), np.asarray(datasetWithDeletedRows['acceleration']).reshape(-1,1), coefBefore)
-#
-# coefAfter = estimate_coef(np.asarray(fillMissingValuesWithInterpolation['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesWithInterpolation['acceleration']).reshape(-1,1))
-# print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
-# printStatistics(fillMissingValuesWithInterpolation)
-#
-# print("Współczynniki krzywej regresji zmieniły się nieznacznie ponieważ w drugim przypadku badany zbiór danych jest większy o 23 rekordy. \nNatomiast średnia wartość kolumn nie zmieniła się ponieważ do wypełnienia brakujących danych zostały wykorzystane średnie wartości")
-# print("Po imputacji danych wychylenie standardowe nieznacznie się zmniejszyło.\n")
-# plot_regression_line(np.asarray(fillMissingValuesWithInterpolation['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesWithInterpolation['acceleration']).reshape(-1,1), coefAfter)
+#-------------------------------------
+dataset = datasetWithNan.copy() # dataset with nan
+print("Metoda interpolacji")
+
+fillMissingValuesWithInterpolation = fillMissingValuesWithInterpolation(dataset)
+print(fillMissingValuesWithInterpolation)
+
+coefAfter = estimate_coef(np.asarray(fillMissingValuesWithInterpolation['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesWithInterpolation.index).reshape(-1,1))
+print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
+printStatistics(fillMissingValuesWithInterpolation)
+
+print("Wnioski: ")
+plot_regression_line(np.asarray(fillMissingValuesWithInterpolation['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesWithInterpolation.index).reshape(-1,1), coefAfter)
+
+#-------------------------------------
+dataset = datasetWithNan.copy() # dataset with nan
+print("Metoda wykorzystująca krzywą regresji")
+
+fillMissingValuesFromRegressionLine = fillMissingValuesFromRegressionLine(dataset, coefAfter)
+
+coefAfter = estimate_coef(np.asarray(fillMissingValuesFromRegressionLine['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesFromRegressionLine['acceleration']).reshape(-1,1))
+print("Wyznaczone współczynniki regresji po imputacji:\na = {} \nb = {}".format(coefAfter[0], coefAfter[1]))
+printStatistics(fillMissingValuesFromRegressionLine)
+
+print("Wnioski: ")
+plot_regression_line(np.asarray(fillMissingValuesFromRegressionLine['horsepower']).reshape(-1,1), np.asarray(fillMissingValuesFromRegressionLine['acceleration']).reshape(-1,1), coefAfter)
