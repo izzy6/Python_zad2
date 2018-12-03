@@ -7,6 +7,7 @@ from sklearn import model_selection
 from sklearn.svm import SVC 
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score  
 import matplotlib.pyplot as plt
+import scipy.stats.contingency as cn
  
 
 def readDataset():
@@ -84,15 +85,42 @@ def pcaReduction(data):
     ax.grid()
     plt.show()
     ###############################################
-
-
     return reducedDataWithClasses
 
+def test_independence(data, colX, colY):
+    X = data[colX].astype(str)
+    Y = data[colY].astype(str)
+    observed = pd.crosstab(Y,X)
+    chi2, p, dof, expected = cn.chi2_contingency(observed.values)
+    return p
+#3
 data = readDataset()
+dataClear = data.copy()
 classification(data)
-
 reducedData = pcaReduction(data)
-
 classification(reducedData)
+print('Po redukcji klasyfikacja jest jakby dokładniejsza')
 
-print('Po redukcji klasyfikacja jest jakby dokładniejsza(?)')
+#4
+# Wariancja
+dataStd = dataClear.std(axis=0, ddof=1)
+dataVar = np.power(dataStd, 2)
+print(dataVar)
+print("Najmniejszą wariancję mają cechy: slength i plenght")
+dataMinVar = pd.DataFrame(dataClear, columns=['slength', 'plength', 'class'])
+classification(dataMinVar)
+# Test niezależności chi**2
+dataChi = []
+labels = list(dataClear)
+for i in range(4):
+    for j in range(4):
+        if(i != j):
+            dataChi.append([labels[i], labels[j], test_independence(dataClear, labels[i], labels[j])])
+minChi = sorted(dataChi, key=lambda x: x[2])[0]
+print('Najmniejszą zależność({}) na podstawie testu chi**2 mają cechy: {} i {}'.format(minChi[2], minChi[0], minChi[1]))
+dataMinChi = pd.DataFrame(dataClear, columns=[ minChi[0],  minChi[1], 'class'])
+classification(dataMinChi)
+
+
+
+
